@@ -2,496 +2,238 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080907">
-  <title>Pockethash — a Termux Bitcoin miner</title>
-  <meta name="description" content="A tiny SHA-256d miner built for Termux. Tune threads, watch shares, and learn how Bitcoin mining works — right from your phone.">
-  <meta property="og:title" content="Pockethash — a Termux Bitcoin miner">
-  <meta property="og:description" content="Bitcoin mining, pocket-sized. A lean SHA-256d miner built for Termux.">
-  <meta property="og:type" content="website">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23f7931a'/%3E%3Cpath d='M9 11.5 13.5 16 9 20.5M16.5 21H23' fill='none' stroke='%23080907' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#050607">
+  <title>BLACKSITE — Tactical FPS</title>
+  <meta name="description" content="BLACKSITE is a browser-based tactical first-person shooter. Hold Sector 07 against five waves of autonomous sentinels.">
+  <meta property="og:title" content="BLACKSITE — Tactical FPS">
+  <meta property="og:description" content="Hold Sector 07. Survive five waves. A real-time Three.js first-person shooter.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23050607'/%3E%3Cpath d='M7 23 16 7l9 16H7Z' fill='none' stroke='%23ff7a18' stroke-width='2.2' stroke-linejoin='round'/%3E%3Cpath d='M12 19h8' stroke='%23ff7a18' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Saira+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
-  <div class="noise" aria-hidden="true"></div>
-  <div class="page-glow" aria-hidden="true"></div>
+  <div id="app">
+    <canvas id="game-canvas" aria-label="BLACKSITE game viewport"></canvas>
 
-  <header class="site-header">
-    <div class="shell header-inner">
-      <a class="brand" href="#top" aria-label="Pockethash home">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32" fill="none">
-            <rect width="32" height="32" rx="8" fill="currentColor"/>
-            <path d="M9 11.5 13.5 16 9 20.5M16.5 21H23" stroke="#080907" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <span class="brand-word">pockethash</span>
-        <span class="brand-tag">termux</span>
-      </a>
-
-      <nav class="site-nav" id="site-nav" aria-label="Main navigation">
-        <a href="#console">Console</a>
-        <a href="#setup">Setup</a>
-        <a href="#features">Features</a>
-        <a href="#reality">Reality</a>
-        <a href="#faq">FAQ</a>
-        <a class="nav-cta" href="#setup">Get the CLI <span aria-hidden="true">↗</span></a>
-      </nav>
-
-      <div class="header-actions">
-        <span class="version-chip"><span class="live-dot" aria-hidden="true"></span>v2.4.1</span>
-        <a class="btn btn-small btn-solid" href="#setup">Get the CLI <span class="arrow" aria-hidden="true">↗</span></a>
-        <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
-          <span></span><span></span>
-        </button>
-      </div>
+    <div class="scene-fx" aria-hidden="true">
+      <div class="scene-grain"></div>
+      <div class="scene-scanlines"></div>
+      <div class="scene-vignette"></div>
     </div>
-  </header>
 
-  <main id="top">
-    <section class="hero">
-      <div class="shell hero-grid">
-        <div class="hero-copy reveal">
-          <div class="eyebrow-pill">
-            <span class="pulse-dot" aria-hidden="true"></span>
-            Open source · Stratum v1 · ARM64
+    <div id="loading" class="loading-screen">
+      <div class="loading-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none"><path d="M10 48 32 10l22 38H10Z" stroke="currentColor" stroke-width="2"/><path d="M22 40h20" stroke="currentColor" stroke-width="2"/><circle cx="32" cy="32" r="30" stroke="currentColor" stroke-width="1" stroke-dasharray="1 7"/></svg>
+      </div>
+      <p class="loading-brand">BLACKSITE</p>
+      <div class="loading-track"><i id="loading-bar"></i></div>
+      <p class="loading-text" id="loading-text">Establishing uplink</p>
+    </div>
+
+    <section id="menu" class="screen menu-screen" aria-label="Main menu">
+      <div class="menu-shade" aria-hidden="true"></div>
+      <div class="menu-grid">
+        <header class="menu-bar">
+          <div class="brand">
+            <span class="brand-glyph" aria-hidden="true">
+              <svg viewBox="0 0 32 32" fill="none"><path d="M5 26 16 6l11 20H5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M11 21h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+            <span class="brand-copy"><strong>BLACKSITE</strong><small>SECTOR 07 / RELAY</small></span>
           </div>
+          <div class="menu-status">
+            <span class="status-online"><i></i> UPLINK STABLE</span>
+            <span>BUILD 1.0.7</span>
+            <span>LOCAL SIM</span>
+          </div>
+        </header>
 
-          <h1>A Bitcoin miner<br><em>pocket-sized.</em></h1>
+        <div class="menu-hero">
+          <p class="kicker"><span>//</span> TACTICAL SIMULATION</p>
+          <h1 class="game-title"><span>BLACK</span><em>SITE</em></h1>
+          <div class="title-rule"><i></i><span>OPERATION DEAD CHANNEL</span></div>
+          <p class="menu-lede">An autonomous security swarm has overrun the relay. You are the last operator inside Sector 07. Clear five waves, hold the line, and bring the core back online.</p>
 
-          <p class="hero-lede">Pockethash is a lean SHA-256d miner built for Termux. Tune threads, watch shares land, and turn a spare Android into the most honest space heater you own.</p>
-
-          <div class="hero-actions">
-            <button class="btn btn-solid" type="button" data-launch-demo>
-              Launch live demo
-              <svg class="btn-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="menu-actions">
+            <button id="deploy-btn" class="deploy-btn" type="button">
+              <span class="deploy-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span class="deploy-copy"><strong>Deploy to Sector 07</strong><small>ENTER THE SIMULATION</small></span>
+              <kbd>↵</kbd>
             </button>
-            <a class="btn btn-ghost" href="#setup">Read the setup</a>
+            <button id="controls-btn" class="controls-btn" type="button" aria-expanded="false" aria-controls="controls-drawer">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 10h2M7 14h6M15 10h2M17 10v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Controls
+            </button>
           </div>
 
-          <div class="hero-meta">
-            <span><strong>48 KB</strong> static binary</span>
-            <span><strong>0%</strong> dev fee</span>
-            <span><strong>MIT</strong> licensed</span>
-          </div>
-        </div>
-
-        <div class="hero-visual reveal delay-1">
-          <div class="orbit" aria-hidden="true">
-            <svg viewBox="0 0 440 440" fill="none">
-              <circle cx="220" cy="220" r="210" stroke="rgba(255,255,255,.09)" stroke-dasharray="2 8"/>
-              <circle cx="220" cy="220" r="168" stroke="rgba(247,147,26,.2)" stroke-dasharray="1 12"/>
-              <circle cx="220" cy="12" r="3.5" fill="#f7931a"/>
-              <circle cx="52" cy="288" r="2.5" fill="#b8ff5a" opacity=".7"/>
-            </svg>
-            <span class="orbit-label">SHA-256d</span>
+          <div id="controls-drawer" class="controls-drawer" hidden>
+            <div class="control-item"><span class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>MOVE</span></div>
+            <div class="control-item"><span class="keys"><kbd>SHIFT</kbd></span><span>SPRINT</span></div>
+            <div class="control-item"><span class="keys"><kbd>SPACE</kbd></span><span>JUMP</span></div>
+            <div class="control-item"><span class="keys"><kbd>LMB</kbd></span><span>FIRE</span></div>
+            <div class="control-item"><span class="keys"><kbd>RMB</kbd></span><span>AIM</span></div>
+            <div class="control-item"><span class="keys"><kbd>R</kbd></span><span>RELOAD</span></div>
           </div>
 
-          <div class="terminal-window">
-            <div class="term-bar">
-              <div class="term-dots" aria-hidden="true"><i></i><i></i><i></i></div>
-              <span class="term-title">~/pockethash</span>
-              <span class="term-chip">arm64</span>
-            </div>
-            <div class="term-body" aria-label="Example mining session">
-              <p><span class="prompt">~ $</span> pockethash run</p>
-              <p><span class="ok">✓</span> stratum connected <span class="dim">· 38ms</span></p>
-              <p><span class="ok">✓</span> 4 threads pinned <span class="dim">· little cores</span></p>
-
-              <div class="term-hud">
-                <div><span>HASHRATE</span><strong>1.84 <small>MH/s</small></strong></div>
-                <div><span>SHARES</span><strong>128 <small>/ 129</small></strong></div>
-                <div><span>UPTIME</span><strong>02:14 <small>:</small>09</strong></div>
-              </div>
-
-              <p class="dim"><span class="stamp">[02:14:09]</span> accepted share #128 <span class="ok">·</span> diff 4.2k</p>
-              <p class="dim"><span class="stamp">[02:14:12]</span> new job <span class="ok">·</span> height 874,201</p>
-              <p class="dim"><span class="stamp">[02:14:15]</span> accepted share #129 <span class="ok">·</span> diff 4.2k</p>
-              <p><span class="prompt">~ $</span> <span class="cursor" aria-hidden="true"></span></p>
-            </div>
-            <div class="term-foot">
-              <span><span class="live-dot" aria-hidden="true"></span> demo telemetry</span>
-              <span>simulation</span>
-            </div>
-          </div>
-
-          <div class="float-card float-temp" aria-hidden="true">
-            <div class="float-icon">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v10.3a3.5 3.5 0 1 0 0 6.2 3.5 3.5 0 0 0 0-6.2V3Z" stroke="currentColor" stroke-width="1.5"/><path d="M12 13v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="17" r="1.4" fill="currentColor"/></svg>
-            </div>
-            <div><span>CPU TEMP</span><strong>47.2 °C</strong></div>
-            <span class="float-status">nominal</span>
+          <div class="menu-footnote">
+            <span class="audio-ready"><i></i> AUDIO READY</span>
+            <span>MOUSE + KEYBOARD RECOMMENDED</span>
+            <span>HEADPHONES ADVISED</span>
           </div>
         </div>
+
+        <aside class="menu-brief" aria-label="Mission brief">
+          <div class="brief-head">
+            <span>DEPLOYMENT BRIEF</span>
+            <i></i>
+          </div>
+          <div class="brief-row"><span>OBJECTIVE</span><strong>Survive five hostile waves</strong></div>
+          <div class="brief-row"><span>LOCATION</span><strong>Sector 07 / Relay Station</strong></div>
+          <div class="brief-row"><span>THREAT</span><strong>Autonomous sentinel swarm</strong></div>
+          <div class="brief-row"><span>LOADOUT</span><strong>VK-77 assault platform</strong></div>
+          <div class="brief-link">
+            <span>LINK QUALITY</span>
+            <div class="signal-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+            <strong>98%</strong>
+          </div>
+          <div class="brief-code" aria-hidden="true">
+            <span>07</span>
+            <small>DEAD CHANNEL</small>
+          </div>
+        </aside>
+
+        <footer class="menu-footer">
+          <span>BLACKSITE // REAL-TIME THREE.JS SIMULATION</span>
+          <span>ALL SYSTEMS NOMINAL</span>
+          <span class="footer-link"><a href="/miner/index.html">POCKETHASH ARCHIVE ↗</a></span>
+        </footer>
       </div>
     </section>
 
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee-track">
-        <span>Built for Termux</span><i>✳</i><span>Android 7+</span><i>✳</i><span>ARM64 + x86_64</span><i>✳</i><span>Stratum v1</span><i>✳</i><span>No root</span><i>✳</i><span>48 KB</span><i>✳</i><span>MIT license</span><i>✳</i>
-        <span>Built for Termux</span><i>✳</i><span>Android 7+</span><i>✳</i><span>ARM64 + x86_64</span><i>✳</i><span>Stratum v1</span><i>✳</i><span>No root</span><i>✳</i><span>48 KB</span><i>✳</i><span>MIT license</span><i>✳</i>
+    <div id="hud" class="hud hidden" aria-label="Heads-up display">
+      <div class="hud-top">
+        <div class="hud-brand">
+          <span class="hud-mark" aria-hidden="true"></span>
+          <span>BLACKSITE<small>SECTOR 07</small></span>
+        </div>
+        <div class="compass" aria-hidden="true">
+          <div class="compass-window">
+            <div class="compass-track" id="compass-track"></div>
+            <i class="compass-caret"></i>
+          </div>
+          <span class="compass-deg" id="compass-deg">000</span>
+        </div>
+        <div class="hud-score">
+          <span>SCORE</span>
+          <strong id="score-value">000000</strong>
+        </div>
+      </div>
+
+      <div class="objective-card">
+        <span class="hud-label">CURRENT WAVE</span>
+        <div class="objective-wave"><strong id="wave-value">01</strong><span>/ 05</span></div>
+        <div class="objective-hostiles"><i></i><span id="hostile-value">05</span> HOSTILES</div>
+      </div>
+
+      <div class="killfeed" id="killfeed"></div>
+
+      <div class="reticle" id="reticle" aria-hidden="true">
+        <i class="reticle-top"></i>
+        <i class="reticle-right"></i>
+        <i class="reticle-bottom"></i>
+        <i class="reticle-left"></i>
+        <b></b>
+      </div>
+
+      <div class="hitmarker" id="hitmarker" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+      <div class="vitals">
+        <div class="vital-head"><span>INTEGRITY</span><strong id="health-value">100</strong></div>
+        <div class="vital-bar health"><i id="health-bar"></i></div>
+        <div class="vital-head shield-head"><span>SHIELD</span><strong id="shield-value">50</strong></div>
+        <div class="vital-bar shield"><i id="shield-bar"></i></div>
+        <div class="vital-foot"><span id="damage-state">NOMINAL</span><span>VK-77 / 5.56</span></div>
+      </div>
+
+      <div class="weapon-panel">
+        <div class="weapon-name"><span>PRIMARY</span><strong>VK-77</strong><small>ASSAULT</small></div>
+        <div class="ammo-readout"><strong id="ammo-value">30</strong><span>/</span><em id="reserve-value">180</em></div>
+        <div class="reload-track"><i id="reload-fill"></i></div>
+        <div class="weapon-foot"><span id="weapon-state">FULL AUTO</span><span>R — RELOAD</span></div>
+      </div>
+
+      <div class="crosshair-hint" id="crosshair-hint">HOLD <b>LMB</b> TO FIRE</div>
+
+      <div class="damage-flash" id="damage-flash" aria-hidden="true"></div>
+      <div class="low-health" id="low-health" aria-hidden="true"></div>
+
+      <div class="wave-banner" id="wave-banner" aria-live="polite">
+        <span id="banner-kicker">HOSTILE WAVE</span>
+        <strong id="banner-title">WAVE 01</strong>
+        <small id="banner-sub">INBOUND</small>
+      </div>
+
+      <div class="game-message" id="game-message" aria-live="polite">
+        <strong id="message-title">SECTOR CLEAR</strong>
+        <span id="message-sub">REGROUP</span>
       </div>
     </div>
 
-    <section class="section" id="console">
-      <div class="shell">
-        <div class="section-head reveal">
-          <div>
-            <p class="eyebrow"><span>01</span> Live telemetry</p>
-            <h2>Every share,<br>in real time.</h2>
-          </div>
-          <p class="section-note">A browser recreation of the Pockethash TUI. It is a simulation — no pool, no wallet, no watts. Poke the controls and watch the numbers move.</p>
+    <section id="pause-screen" class="screen modal-screen hidden" aria-label="Pause menu">
+      <div class="modal">
+        <p class="kicker"><span>//</span> SIMULATION PAUSED</p>
+        <h2>HOLD POSITION</h2>
+        <p class="modal-copy">The swarm is holding its breath. Resume when you are ready to re-enter the sector.</p>
+        <div class="modal-stats">
+          <div><span>SCORE</span><strong id="pause-score">000000</strong></div>
+          <div><span>KILLS</span><strong id="pause-kills">0</strong></div>
+          <div><span>WAVE</span><strong id="pause-wave">01 / 05</strong></div>
         </div>
-
-        <div class="console-shell reveal delay-1" id="demo">
-          <div class="console-top">
-            <div class="console-id">
-              <span class="live-dot" aria-hidden="true"></span>
-              <span class="worker">demo@pixel-7</span>
-              <span class="console-sep" aria-hidden="true">/</span>
-              <span class="pool">stratum+tcp://pool.example.com:3333</span>
-            </div>
-            <div class="console-controls">
-              <div class="thread-control" aria-label="Mining threads">
-                <span class="control-label">THREADS</span>
-                <button type="button" data-threads-down aria-label="Decrease threads">−</button>
-                <output id="thread-count" aria-live="polite">4</output>
-                <button type="button" data-threads-up aria-label="Increase threads">+</button>
-              </div>
-              <button class="demo-toggle" id="demo-toggle" type="button" aria-pressed="true">
-                <span class="toggle-icon" aria-hidden="true"></span>
-                <span class="toggle-text">Pause demo</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="console-grid">
-            <div class="console-cell hash-cell">
-              <div class="cell-head">
-                <span class="cell-label">HASHRATE</span>
-                <span class="delta-chip" id="hash-delta">+2.4%</span>
-              </div>
-              <div class="hashline">
-                <span class="hash-value" id="hashrate">1.84</span>
-                <span class="hash-unit">MH/s</span>
-              </div>
-              <div class="chart-wrap">
-                <canvas id="hash-chart" role="img" aria-label="Live hashrate chart"></canvas>
-                <div class="chart-labels" aria-hidden="true"><span>60s ago</span><span>now</span></div>
-              </div>
-            </div>
-
-            <div class="console-cell thermal-cell">
-              <div class="cell-head">
-                <span class="cell-label">THERMAL</span>
-                <span class="status-text" id="thermal-status">nominal</span>
-              </div>
-              <div class="thermal-gauge">
-                <svg viewBox="0 0 160 160" aria-hidden="true">
-                  <circle class="gauge-track" cx="80" cy="80" r="62" pathLength="100"/>
-                  <circle class="gauge-fill" id="thermal-ring" cx="80" cy="80" r="62" pathLength="100"/>
-                </svg>
-                <div class="thermal-read">
-                  <strong id="temperature">47.2</strong>
-                  <span>°C</span>
-                  <small>CPU PACKAGE</small>
-                </div>
-              </div>
-              <div class="thermal-meta">
-                <span>Limit <strong>60 °C</strong></span>
-                <span>Guard <strong>on</strong></span>
-              </div>
-            </div>
-
-            <div class="console-cell log-cell">
-              <div class="cell-head">
-                <span class="cell-label">PROCESS LOG</span>
-                <button class="text-btn" id="clear-log" type="button">Clear</button>
-              </div>
-              <div class="log-feed" id="log-feed" aria-live="polite"></div>
-            </div>
-
-            <div class="console-cell session-cell">
-              <div class="cell-head"><span class="cell-label">SESSION</span></div>
-              <dl class="session-list">
-                <div><dt>Accepted</dt><dd id="accepted">128</dd></div>
-                <div><dt>Rejected</dt><dd id="rejected">1</dd></div>
-                <div><dt>Uptime</dt><dd id="uptime">02:14:09</dd></div>
-                <div><dt>Demo balance</dt><dd id="balance">12,842 <small>sats</small></dd></div>
-              </dl>
-              <div class="session-foot">
-                <span>Share diff</span><strong>4.2k</strong>
-              </div>
-            </div>
-          </div>
+        <div class="settings">
+          <label>SENSITIVITY <output id="sens-output">1.0</output><input id="sens-range" type="range" min="0.3" max="2" step="0.1" value="1"></label>
+          <label>VOLUME <output id="volume-output">70%</output><input id="volume-range" type="range" min="0" max="1" step="0.05" value="0.7"></label>
         </div>
-
-        <p class="demo-disclaimer reveal"><span aria-hidden="true">◉</span> Simulation only. The real CLI connects to a pool you choose. CPU mining is not a reliable income source.</p>
+        <div class="modal-actions">
+          <button id="resume-btn" class="modal-primary" type="button">Resume operation</button>
+          <button id="restart-btn" class="modal-secondary" type="button">Restart</button>
+          <button id="quit-btn" class="modal-quiet" type="button">Abort to menu</button>
+        </div>
+        <p class="modal-hint">CLICK RESUME OR PRESS ESC TO RE-ENTER</p>
       </div>
     </section>
 
-    <section class="section setup-section" id="setup">
-      <div class="shell setup-grid">
-        <div class="setup-intro reveal">
-          <p class="eyebrow"><span>02</span> Get started</p>
-          <h2>Three commands.<br>One pocket rig.</h2>
-          <p>Install Termux, pull the binary, point it at a pool. The whole thing fits in a terminal and runs without root.</p>
-
-          <div class="tip-card">
-            <span class="tip-icon" aria-hidden="true">!</span>
-            <p><strong>Install Termux from F-Droid.</strong> The Play Store build is deprecated and will break package installs.</p>
-          </div>
-
-          <a class="text-link" href="https://f-droid.org/packages/com.termux/" target="_blank" rel="noopener noreferrer">Get Termux on F-Droid <span aria-hidden="true">↗</span></a>
+    <section id="end-screen" class="screen modal-screen end-screen hidden" aria-label="Operation result">
+      <div class="modal end-modal">
+        <div class="end-mark" id="end-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none"><path d="M10 48 32 10l22 38H10Z" stroke="currentColor" stroke-width="2"/><path d="M22 40h20" stroke="currentColor" stroke-width="2"/></svg>
         </div>
-
-        <div class="setup-steps reveal delay-1">
-          <article class="step">
-            <span class="step-number">01</span>
-            <div class="step-body">
-              <h3>Open Termux and update</h3>
-              <p>Fresh package lists first. This avoids the classic “unable to locate package” detour.</p>
-              <div class="code-inline">
-                <code>pkg update && pkg upgrade</code>
-                <button class="copy-btn" type="button" data-copy="pkg update && pkg upgrade" aria-label="Copy command">
-                  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="currentColor" stroke-width="1.3"/></svg>
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <article class="step">
-            <span class="step-number">02</span>
-            <div class="step-body">
-              <h3>Install Pockethash</h3>
-              <p>One package, one static binary. No Python runtime, no build tools, no browser tab left open.</p>
-              <div class="code-window">
-                <div class="code-tabs" role="tablist" aria-label="Install method">
-                  <button role="tab" id="tab-termux" aria-selected="true" aria-controls="code-content" data-tab="termux" type="button">Termux</button>
-                  <button role="tab" id="tab-linux" aria-selected="false" aria-controls="code-content" data-tab="linux" type="button">Linux</button>
-                  <button role="tab" id="tab-docker" aria-selected="false" aria-controls="code-content" data-tab="docker" type="button">Docker</button>
-                  <button class="copy-btn code-copy" type="button" data-copy-target="code-content" aria-label="Copy install commands">
-                    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="currentColor" stroke-width="1.3"/></svg>
-                  </button>
-                </div>
-                <pre class="code-content" id="code-content" role="tabpanel" aria-labelledby="tab-termux" tabindex="0"><code id="code-text"><span class="code-dim"># install and initialize</span>
-pkg install pockethash
-pockethash init --worker pocket-01
-
-<span class="code-dim"># point at a pool and run</span>
-pockethash run</code></pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="step">
-            <span class="step-number">03</span>
-            <div class="step-body">
-              <h3>Set your worker</h3>
-              <p>The config stays local. Use a public payout address — never a seed phrase. Start with four threads and a 42 °C guard.</p>
-              <div class="code-window config-window">
-                <div class="config-head">
-                  <span><i aria-hidden="true"></i> ~/.config/pockethash/config.toml</span>
-                  <button class="copy-btn" type="button" data-copy="[pool]&#10;url = &quot;stratum+tcp://pool.example.com:3333&quot;&#10;worker = &quot;pocket-01&quot;&#10;threads = 4&#10;temp_limit = 42" aria-label="Copy configuration">
-                    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="currentColor" stroke-width="1.3"/></svg>
-                  </button>
-                </div>
-                <pre class="config-code"><code><span class="code-key">[pool]</span>
-<span class="code-prop">url</span> = <span class="code-str">"stratum+tcp://pool.example.com:3333"</span>
-<span class="code-prop">worker</span> = <span class="code-str">"pocket-01"</span>
-<span class="code-prop">threads</span> = <span class="code-num">4</span>
-<span class="code-prop">temp_limit</span> = <span class="code-num">42</span></code></pre>
-              </div>
-            </div>
-          </article>
+        <p class="kicker"><span>//</span> <span id="end-kicker">OPERATION TERMINATED</span></p>
+        <h2 id="end-title">SIGNAL LOST</h2>
+        <p class="modal-copy" id="end-copy">Sector 07 has gone dark. The swarm is still active.</p>
+        <div class="end-stats">
+          <div><span>SCORE</span><strong id="end-score">000000</strong></div>
+          <div><span>KILLS</span><strong id="end-kills">0</strong></div>
+          <div><span>ACCURACY</span><strong id="end-accuracy">0%</strong></div>
+          <div><span>WAVES</span><strong id="end-waves">0 / 5</strong></div>
+        </div>
+        <div class="modal-actions">
+          <button id="end-restart" class="modal-primary" type="button">Redeploy</button>
+          <button id="end-menu" class="modal-secondary" type="button">Return to menu</button>
         </div>
       </div>
     </section>
 
-    <section class="section features-section" id="features">
-      <div class="shell">
-        <div class="section-head reveal">
-          <div>
-            <p class="eyebrow"><span>03</span> Under the hood</p>
-            <h2>Small binary.<br>Serious control.</h2>
-          </div>
-          <p class="section-note">No dashboards to sign up for, no telemetry to opt out of. Just a focused terminal tool that tells you exactly what it is doing.</p>
-        </div>
-
-        <div class="bento">
-          <article class="bento-card bento-wide reveal">
-            <div class="card-topline"><span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v10.2a3.4 3.4 0 1 0 0 6.1 3.4 3.4 0 0 0 0-6.1V3Z" stroke="currentColor" stroke-width="1.5"/><path d="M12 13v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="currentColor"/></svg></span><span class="card-kicker">01 / SAFETY</span></div>
-            <h3>Thermal guard, always on.</h3>
-            <p>Set a temperature ceiling. Pockethash throttles threads before your battery becomes a headline. Defaults are deliberately conservative.</p>
-            <div class="thermal-demo">
-              <div class="thermal-demo-head"><span>PACKAGE TEMP</span><strong>42.0 °C</strong><span>LIMIT</span></div>
-              <div class="thermal-track"><i></i><b style="left:70%"></b></div>
-              <div class="thermal-demo-foot"><span>ECO</span><span>BALANCED</span><span>THROTTLED</span></div>
-            </div>
-          </article>
-
-          <article class="bento-card reveal delay-1">
-            <div class="card-topline"><span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M9 9h6M9 12h6M9 15h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span><span class="card-kicker">02 / CONTROL</span></div>
-            <h3>Thread tuner</h3>
-            <p>Pin 1–8 workers, leave headroom for the rest of your phone, and watch the trade-off live.</p>
-            <div class="thread-bars" aria-hidden="true">
-              <i style="--h:38%"></i><i style="--h:52%"></i><i style="--h:72%"></i><i style="--h:88%"></i><i style="--h:64%"></i><i style="--h:30%"></i><i style="--h:18%"></i><i style="--h:10%"></i>
-            </div>
-          </article>
-
-          <article class="bento-card reveal delay-2">
-            <div class="card-topline"><span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M8.5 10V8a3.5 3.5 0 1 1 7 0v2" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="15" r="1.2" fill="currentColor"/></svg></span><span class="card-kicker">03 / ACCESS</span></div>
-            <h3>No root. No tricks.</h3>
-            <p>Everything lives in userspace. Install it, run it, delete it. Your bootloader stays locked.</p>
-            <span class="big-stat">0</span>
-            <span class="big-stat-label">privileges required</span>
-          </article>
-
-          <article class="bento-card reveal">
-            <div class="card-topline"><span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="7" r="2.2" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="7" r="2.2" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="17" r="2.2" stroke="currentColor" stroke-width="1.5"/><path d="M8 8.2 10.5 15M16 8.2 13.5 15M8.2 7h7.6" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="card-kicker">04 / NETWORK</span></div>
-            <h3>Pool failover</h3>
-            <p>Define primary and backup Stratum endpoints. If one drops, the miner reconnects and keeps your session intact.</p>
-            <div class="node-flow" aria-hidden="true">
-              <span class="node">PRIMARY</span><i></i><span class="node">BACKUP</span><i></i><span class="node node-live">LIVE</span>
-            </div>
-          </article>
-
-          <article class="bento-card reveal delay-1">
-            <div class="card-topline"><span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M8.5 9.5h1.2v5M8 14.5h3.2M14 9.5h1.7v5H14z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="card-kicker">05 / FOOTPRINT</span></div>
-            <h3>48 kilobytes</h3>
-            <p>A static binary with no runtime, no Electron shell, and no dependency tree waiting to break.</p>
-            <span class="big-stat">48<span>KB</span></span>
-            <span class="big-stat-label">stripped arm64 build</span>
-          </article>
-
-          <article class="bento-card bento-full reveal delay-2">
-            <div class="card-topline"><span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m9 8-4 4 4 4M15 8l4 4-4 4M13 5l-2 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="card-kicker">06 / OPENNESS</span></div>
-            <h3>Auditable by design.</h3>
-            <p>MIT licensed, deterministic builds, and zero telemetry. Read every line, fork it, or compile it on the device it runs on.</p>
-            <div class="code-snippet" aria-hidden="true">
-              <span class="ln">01</span><span><span class="c-key">fn</span> <span class="c-fn">submit_share</span>(job: <span class="c-type">Job</span>) -&gt; <span class="c-type">Result</span>&lt;()&gt; {</span>
-              <span class="ln">02</span><span>&nbsp;&nbsp;<span class="c-key">let</span> nonce = job.<span class="c-fn">next_nonce</span>();</span>
-              <span class="ln">03</span><span>&nbsp;&nbsp;pool.<span class="c-fn">send</span>(Share { nonce, job_id });</span>
-              <span class="ln">04</span><span>}</span>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section reality-section" id="reality">
-      <div class="shell">
-        <div class="reality-card reveal">
-          <div class="reality-copy">
-            <p class="eyebrow"><span>04</span> The reality check</p>
-            <h2>Your phone will not get rich.<br><em>It will get warm.</em></h2>
-            <p>A flagship phone sustains one to three megahashes. A modern ASIC does hundreds of terahashes. That is roughly a hundred-million-fold gap — before electricity.</p>
-            <p class="reality-note">Pockethash is for learning how Stratum, shares, nonces, and SHA-256d fit together. It is not a business plan.</p>
-            <a class="btn btn-ghost" href="#faq">Read the honest FAQ</a>
-          </div>
-          <div class="scale-viz" aria-label="Hashrate comparison: phone 2 megahashes per second versus ASIC 200 terahashes per second, a hundred-million-fold difference">
-            <div class="scale-head"><span>HASHRATE, TO SCALE</span><span>≈ 100,000,000×</span></div>
-            <div class="scale-row">
-              <div class="scale-label"><span>Spare phone</span><strong>2 MH/s</strong></div>
-              <div class="scale-track"><i class="phone-bar"></i></div>
-            </div>
-            <div class="scale-row">
-              <div class="scale-label"><span>Modern ASIC</span><strong>200 TH/s</strong></div>
-              <div class="scale-track"><i class="asic-bar"></i></div>
-            </div>
-            <div class="scale-foot"><span>0</span><span>200,000,000 MH/s</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section faq-section" id="faq">
-      <div class="shell faq-grid">
-        <div class="faq-intro reveal">
-          <p class="eyebrow"><span>05</span> Questions</p>
-          <h2>The honest<br>FAQ.</h2>
-          <p>No hype, no “passive income” screenshots. Just what happens when you point a CPU at SHA-256d.</p>
-        </div>
-
-        <div class="faq-list reveal delay-1">
-          <details>
-            <summary>Does this require root or a custom ROM?<span aria-hidden="true"></span></summary>
-            <div class="faq-answer"><p>No. Pockethash runs entirely in userspace inside Termux. You do not need to unlock the bootloader, flash a ROM, or grant superuser access.</p></div>
-          </details>
-          <details>
-            <summary>Will it make any money?<span aria-hidden="true"></span></summary>
-            <div class="faq-answer"><p>Almost certainly not at retail electricity prices. Phones produce a tiny fraction of the hashrate of dedicated ASICs. Treat a share as a successful test, not a paycheck.</p></div>
-          </details>
-          <details>
-            <summary>Will mining damage my phone?<span aria-hidden="true"></span></summary>
-            <div class="faq-answer"><p>Sustained heat accelerates battery wear. Use a spare device, keep the thermal limit conservative, and avoid mining on the phone you rely on every day.</p></div>
-          </details>
-          <details>
-            <summary>Which pools can I use?<span aria-hidden="true"></span></summary>
-            <div class="faq-answer"><p>Any pool that speaks Stratum v1 and accepts SHA-256d workers. Use a public payout address, verify the pool fee, and never share a seed phrase or private key.</p></div>
-          </details>
-          <details>
-            <summary>Does it run on iOS?<span aria-hidden="true"></span></summary>
-            <div class="faq-answer"><p>No. Pockethash is built for Termux and Linux on ARM64 or x86_64. iOS does not allow the background execution or terminal environment required.</p></div>
-          </details>
-          <details>
-            <summary>Is the demo on this page real mining?<span aria-hidden="true"></span></summary>
-            <div class="faq-answer"><p>No. The console is a simulation running in your browser. It does not connect to a pool, use your CPU for hashing, or hold a balance. It exists to show the interface.</p></div>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <section class="cta-section">
-      <div class="shell">
-        <div class="cta-card reveal">
-          <div class="cta-copy">
-            <p class="eyebrow"><span>06</span> Ready when you are</p>
-            <h2>Turn a spare phone<br>into a very slow heater.</h2>
-          </div>
-          <div class="cta-action">
-            <p>Install Termux, paste one line, and watch the first share land.</p>
-            <div class="command-chip">
-              <code>pkg install pockethash</code>
-              <button class="copy-btn" type="button" data-copy="pkg install pockethash" aria-label="Copy install command">
-                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="currentColor" stroke-width="1.3"/></svg>
-              </button>
-            </div>
-            <a class="text-link" href="#setup">Full setup guide <span aria-hidden="true">→</span></a>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="shell footer-main">
-      <div class="footer-brand">
-        <a class="brand" href="#top" aria-label="Pockethash home">
-          <span class="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M9 11.5 13.5 16 9 20.5M16.5 21H23" stroke="#080907" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-          <span class="brand-word">pockethash</span>
-        </a>
-        <p>A tiny Bitcoin miner for people who like terminals more than promises.</p>
-      </div>
-      <div class="footer-links">
-        <div><span>Project</span><a href="#console">Console</a><a href="#setup">Setup</a><a href="#features">Features</a></div>
-        <div><span>Learn</span><a href="#reality">Reality check</a><a href="#faq">FAQ</a><a href="https://f-droid.org/packages/com.termux/" target="_blank" rel="noopener noreferrer">Termux ↗</a></div>
-        <div><span>Legal</span><a href="#faq">Disclaimer</a><a href="#faq">License</a></div>
-      </div>
+    <div id="rotate-hint" class="rotate-hint" aria-hidden="true">
+      <div class="rotate-icon"></div>
+      <p>ROTATE DEVICE</p>
+      <span>BLACKSITE IS BEST PLAYED IN LANDSCAPE</span>
     </div>
-    <div class="shell footer-bottom">
-      <span>© <span id="year">2026</span> Pockethash contributors. MIT licensed.</span>
-      <span>Not financial advice. Mine responsibly.</span>
-    </div>
-  </footer>
+  </div>
 
-  <div class="toast" id="toast" role="status" aria-live="polite">Copied to clipboard</div>
-
-  <script src="app.js"></script>
+  <script type="module" src="/src/main.js"></script>
 </body>
 </html>
